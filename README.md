@@ -4,7 +4,7 @@ Protótipo de uma app para registar sessões de fisioterapia no ginásio, pensad
 
 - Um único ficheiro: `index.html` (HTML, CSS e JavaScript, sem dependências nem build).
 - Os dados são fictícios e ficam guardados só no browser de cada aparelho (localStorage).
-- Para entrar: escolher um terapeuta e usar o PIN `1234`.
+- Para entrar: escolher Gabriel Nunes (diretor clínico) e usar o PIN `1234`. O resto da equipa é adicionado por ele: nome no canto de cima → **Equipa** (nome, função, PIN de 4 algarismos e se pode editar protocolos). A equipa fica guardada no iPad e mantém-se ao repor os dados de demonstração.
 
 Para abrir localmente, basta abrir `index.html` no browser.
 
@@ -40,3 +40,7 @@ Está afinada para o iPad, tanto ao alto como deitado:
 - **Toque:** sem zoom com toque duplo nos botões + e −, efeito de pressão nos botões e hover só onde há rato.
 - **Safari:** nenhum campo abaixo de 16 px, para o iOS não fazer zoom ao escrever. A página inteira não "puxa" e o ecrã não se apaga durante a sessão.
 - **Ecrã principal:** ícone com o logo da Osteogab em fundo branco (pasta `icons/` e `manifest.webmanifest`), ecrã inteiro e zonas seguras (a barra de baixo do iPad não tapa o rodapé). No Safari: Partilhar → Adicionar ao ecrã principal.
+
+## Ideias para a app (provisório, só no piloto)
+
+O botão **Ideia**, na barra de cima, está sempre à mão, também a meio da sessão. Serve para a equipa anotar o que mudaria, o que faltou ou o que correu mal. Cada ideia guarda quem a escreveu, quando e onde estava na app (por exemplo, "Sessão · Pêndulo de Codman"). Em "Ver as ideias" aparecem todas, e "Enviar todas" abre o menu de partilha do iPad (WhatsApp, email…) ou copia o texto. As ideias ficam no aparelho (`D.ideas`) e "Repor dados de demonstração" não as apaga. Para retirar o botão no fim do piloto, pôr `PILOTO = false` no script.

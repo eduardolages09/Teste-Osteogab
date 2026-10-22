@@ -113,6 +113,19 @@ h1.brand-word{font-size:1.5rem;letter-spacing:.18em}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--bad);animation:pulse 1.6s infinite;flex:none}
 @keyframes pulse{50%{opacity:.35}}
 .top-note{margin-left:auto}
+.top-idea{margin-left:auto;min-height:40px;padding:0 12px;font-size:.92rem;gap:6px;background:var(--sand-soft);color:var(--sand-ink);border:1px dashed var(--sand)}
+.top-idea + .top-note{margin-left:0}
+/* Com uma sessão em curso, a barra fica cheia: o botão de ideias mostra só o ícone e a pastilha encolhe com o ecrã */
+.live-pill ~ .top-idea{padding:0 10px} .live-pill ~ .top-idea span{display:none}
+.lp-short{display:none}
+@media (max-width:1365px){ .lp-long{display:none} .top:has(.live-pill) .brand-sub,.top:has(.live-pill) .me-name{display:none} .top:has(.live-pill){gap:10px} }
+@media (min-width:701px) and (max-width:800px){ .top:has(.live-pill) .lp-short,.top:has(.live-pill) .top-note span{display:none} }
+.bulb{flex:none}
+.idea-where{font-size:.85rem;color:var(--muted)}
+.team-list{display:flex;flex-direction:column;gap:8px}
+.team-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface)}
+.team-main{display:flex;flex-direction:column;min-width:0;flex:1}
+.team-main b{font-weight:600}
 .me{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 6px 0 4px;border-radius:999px}
 @media (hover:hover){ .me:hover{background:var(--surface-2)} }
 .me-name{font-weight:600}
@@ -482,7 +495,7 @@ button.note-src{text-decoration:underline;text-decoration-color:var(--line);text
   .top-brand .brand-sub,.me-name{display:none}
   .tab{padding:0 10px;flex:1 0 auto}
   .top-nav{order:3;width:100%;overflow-x:auto;scrollbar-width:none}
-  .top-note span{display:none}
+  .top-note span,.top-idea span{display:none}
   .live-bar > .dot{display:none}
   .wrap{padding-inline:16px}
   .session{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr)}
@@ -531,8 +544,10 @@ button.note-src{text-decoration:underline;text-decoration-color:var(--line);text
 /* iPad ao alto (744 a 1000 px): tudo numa linha em cima, duas colunas no treino e na sessão */
 @media (min-width:701px) and (max-width:1000px){
   .top{gap:10px}
-  .top-brand .brand-sub,.me-name{display:none}
-  .tab{padding:0 12px}
+  .top-brand .brand-sub,.top-brand .brand-word,.me-name,.top-idea span,.lp-pt{display:none}
+  .top-brand{margin-right:0}
+  .lp-short{display:inline}
+  .tab{padding:0 10px}
   .session{grid-template-columns:minmax(200px,232px) minmax(0,1fr)}
   .builder{grid-template-columns:minmax(0,1fr) 300px}
   .b-main{padding:16px 16px 48px}
@@ -1273,9 +1288,7 @@ var VOL_NAME = {reps:'Repetições', secs:'Tempo (segundos)', min:'Duração (mi
 var RES_NAME = {'':'Sem resistência', kg:'Carga em kg', band:'Elástico (cor)'};
 
 var THS = [
-  {id:'t1', name:'Rui Tavares', ini:'RT', role:'Diretor clínico · Fisioterapeuta', admin:true, av:1, pin:'1234'},
-  {id:'t2', name:'Inês Moura', ini:'IM', role:'Fisioterapeuta', admin:false, av:2, pin:'1234'},
-  {id:'t3', name:'Sara Lopes', ini:'SL', role:'Fisioterapeuta · Pilates clínico', admin:false, av:3, pin:'1234'}
+  {id:'t1', name:'Gabriel Nunes', ini:'GN', role:'Diretor clínico', admin:true, av:1, pin:'1234'}
 ];
 
 var T_FLEX = {id:'flexj', name:'Flexão do joelho', unit:'°', uni:true};
@@ -1302,23 +1315,23 @@ var PROTOS = [
 // Testes: a = lado lesionado, h = lado são, v = teste sem lados. "at" são os índices das sessões em que se mediu.
 // extra: exercícios acrescentados na sessão fora do protocolo. stars: exercícios recomendados para o paciente. epain: dor fixa por exercício.
 var PATS = [
-  {id:'p7',code:'P-0161',alias:'Marta · ombro',proto:'ombro1',side:'D',goal:'Voltar a nadar e a treinar no ginásio sem dor',n:1,last:4,p0:4,p1:4,pattern:['t2'],
+  {id:'p7',code:'P-0161',alias:'Marta · ombro',proto:'ombro1',side:'D',goal:'Voltar a nadar e a treinar no ginásio sem dor',n:1,last:4,p0:4,p1:4,pattern:['t1'],
     extra:[['elevlat',3,12,2],['flexpar',3,12]], stars:['elevlat','flexpar','reel'], epain:{pendulo:1,wallslide:2,reel:6,riel:3,retel:1,elevlat:2,flexpar:1},
     notes:{0:'Primeira sessão. Dor no arco doloroso entre 80° e 120°.'}, tests:{at:[0], elev:{a:[132],h:[176]}, re:{a:[62],h:[94]}}},
-  {id:'p1',code:'P-0142',alias:'João · futebol',proto:'lca2',side:'D',goal:'Voltar a jogar futebol ao fim de semana',n:9,last:2,p0:5,p1:2,pattern:['t1','t1','t2','t1','t3','t1','t2','t1','t1'],
+  {id:'p1',code:'P-0142',alias:'João · futebol',proto:'lca2',side:'D',goal:'Voltar a jogar futebol ao fim de semana',n:9,last:2,p0:5,p1:2,pattern:['t1','t1','t1','t1','t1','t1','t1','t1','t1'],
     swaps:{3:{stepup:'lunge',reason:'Dor'},6:{agach:'agachcx',reason:'Não gosta'}}, stars:['stepup','rdl'],
     notes:{0:'Início da fase 2. Sem derrame.',4:'Ligeira dor anterior do joelho no step-up.',8:'Correu 20 min no fim de semana sem queixas.'},
     tests:{at:[0,4,8], flexj:{a:[112,124,131],h:[140,140,141]}, hop:{a:[92,114,127],h:[148,151,153]}}},
-  {id:'p2',code:'P-0137',alias:'Rita · corrida',proto:'lca1',side:'E',goal:'Voltar a correr 10 km',n:4,last:1,p0:6,p1:4,pattern:['t2','t1','t2','t2'],
+  {id:'p2',code:'P-0137',alias:'Rita · corrida',proto:'lca1',side:'E',goal:'Voltar a correr 10 km',n:4,last:1,p0:6,p1:4,pattern:['t1','t1','t1','t1'],
     notes:{3:'Extensão completa atingida.'}, tests:{at:[0,3], flexj:{a:[86,104],h:[138,138]}, apoio:{a:[12,21],h:[30,30]}}},
-  {id:'p3',code:'P-0151',alias:'Sr. Almeida',proto:'lombar',side:null,goal:'Caminhar uma hora sem dor',n:6,last:4,p0:7,p1:3,pattern:['t1','t3','t3','t1','t3','t1'],
+  {id:'p3',code:'P-0151',alias:'Sr. Almeida',proto:'lombar',side:null,goal:'Caminhar uma hora sem dor',n:6,last:4,p0:7,p1:3,pattern:['t1','t1','t1','t1','t1','t1'],
     swaps:{1:{prancha:'pranchaj',reason:'Demasiado difícil'},2:{prancha:'pranchaj',reason:'Demasiado difícil'}},
     notes:{0:'Refere rigidez matinal de 30 min.',5:'Menos rigidez de manhã. Caminha 40 min por dia.'},
     tests:{at:[0,5], odi:{v:[38,22]}, sor:{v:[42,78]}}},
-  {id:'p4',code:'P-0149',alias:'Beatriz · natação',proto:'ombro2',side:'D',goal:'Regressar à competição em dezembro',n:7,last:3,p0:4,p1:1,pattern:['t1','t1','t1','t2','t1','t1','t1'],
+  {id:'p4',code:'P-0149',alias:'Beatriz · natação',proto:'ombro2',side:'D',goal:'Regressar à competição em dezembro',n:7,last:3,p0:4,p1:1,pattern:['t1','t1','t1','t1','t1','t1','t1'],
     swaps:{4:{press:'landmine',reason:'Dor'}},notes:{4:'Dor no press acima da cabeça. Trocado para landmine.'}, stars:['rotextcabo','ytw'],
     tests:{at:[0,6], re:{a:[78,91],h:[96,96]}, dinre:{a:[8.5,11],h:[12.5,12.5]}}},
-  {id:'p5',code:'P-0155',alias:'Carlos · padel',proto:'ombro1',side:'D',goal:'Jogar padel sem dor',n:3,last:6,p0:6,p1:5,pattern:['t3','t1','t3'],
+  {id:'p5',code:'P-0155',alias:'Carlos · padel',proto:'ombro1',side:'D',goal:'Jogar padel sem dor',n:3,last:6,p0:6,p1:5,pattern:['t1','t1','t1'],
     tests:{at:[0], elev:{a:[122],h:[176]}, re:{a:[54],h:[92]}}},
   {id:'p6',code:'P-0158',alias:'Tiago · ciclismo',proto:'lombar',side:null,goal:'',n:0,last:0,p0:0,p1:0,pattern:['t1']}
 ];
@@ -1441,16 +1454,16 @@ function seed(){
 // Notas rápidas de exemplo: [paciente, há quantos dias, terapeuta, hora, texto]
 function seedNotes(patients){
   var N = [
-    ['p7',0,'t2',9.5,'A Marta ligou de manhã: teve dor à noite no ombro depois da última sessão, cerca de 4/10, passou com gelo. Rever a carga da rotação externa antes de começar.'],
-    ['p3',0,'t3',8.75,'Prefere sessões de manhã. Tem disponibilidade às terças e quintas.'],
-    ['p4',0,'t2',8.25,'Sem queixas no ombro no treino de piscina de ontem.'],
+    ['p7',0,'t1',9.5,'A Marta ligou de manhã: teve dor à noite no ombro depois da última sessão, cerca de 4/10, passou com gelo. Rever a carga da rotação externa antes de começar.'],
+    ['p3',0,'t1',8.75,'Prefere sessões de manhã. Tem disponibilidade às terças e quintas.'],
+    ['p4',0,'t1',8.25,'Sem queixas no ombro no treino de piscina de ontem.'],
     ['p4',1,'t1',19,'O treinador do clube pediu um ponto de situação por email. Enviar o resumo dos testes de rotação externa.'],
-    ['p2',1,'t2',16,'Faltou à sessão por doença. Remarcada para sexta às 18h.'],
+    ['p2',1,'t1',16,'Faltou à sessão por doença. Remarcada para sexta às 18h.'],
     ['p1',2,'t1',12.5,'O ortopedista pediu relatório de evolução para a consulta do dia 30. Imprimir o último relatório antes disso.'],
-    ['p7',4,'t2',18,'Trabalha ao computador 8 horas por dia. Falar das pausas e da posição do ecrã na próxima sessão.'],
+    ['p7',4,'t1',18,'Trabalha ao computador 8 horas por dia. Falar das pausas e da posição do ecrã na próxima sessão.'],
     ['p3',6,'t1',10,'Trouxe a ressonância lombar: protusão L4-L5 sem compromisso radicular. Cópia entregue na receção.'],
-    ['p5',6,'t3',15,'O seguro de saúde pede declaração de presença em cada sessão.'],
-    ['p1',9,'t3',17,'Joga sábado num torneio de veteranos. Evitar pliometria na quinta-feira.']
+    ['p5',6,'t1',15,'O seguro de saúde pede declaração de presença em cada sessão.'],
+    ['p1',9,'t1',17,'Joga sábado num torneio de veteranos. Evitar pliometria na quinta-feira.']
   ], now = Date.now(), ids = patients.map(function(p){return p.id;});
   return N.filter(function(n){ return ids.indexOf(n[0])>=0; }).map(function(n, i){
     var d = new Date(); d.setDate(d.getDate()-n[1]); d.setHours(Math.floor(n[3]), Math.round(n[3]%1*60), 0, 0);
@@ -1489,6 +1502,22 @@ var D = loadData() || seed();
 D.exercises = mergeLib(D.exercises);
 D.patients.forEach(function(p){ p.stars = p.stars||[]; });
 if(!D.notes) D.notes = seedNotes(D.patients);
+if(!D.ideas) D.ideas = [];
+fixTeam(D);
+// A equipa: o Gabriel (t1) vem de THS e é sempre diretor clínico; as outras pessoas são adicionadas por ele no ecrã Equipa.
+// Perfis de exemplo de versões anteriores saem; os registos de quem já não existe passam para o Gabriel
+function fixTeam(d){
+  var old=d.therapists||[], g=old.find(function(t){ return t.id==='t1'; });
+  d.therapists = [Object.assign({}, THS[0], g?{name:g.name, ini:g.ini, role:g.role, pin:g.pin}:{}, {admin:true})]
+    .concat(old.filter(function(t){ return t.added; }));
+  var ok={}; d.therapists.forEach(function(t){ ok[t.id]=1; });
+  function f(id){ return ok[id] ? id : 't1'; }
+  [d.sessions, d.tests, d.notes].forEach(function(list){ (list||[]).forEach(function(x){ x.therapistId=f(x.therapistId); }); });
+  d.patients.forEach(function(p){ if(p.plan) p.plan.by=f(p.plan.by); });
+  (d.ideas||[]).forEach(function(x){ x.by=f(x.by); });
+  if(d.live) d.live.therapistId=f(d.live.therapistId);
+  if(d.me && !ok[d.me]) d.me=null;
+}
 var ui = freshUi();
 function freshUi(){ return {view: D.me ? (D.live?'session':'patients') : 'login', loginFor:null, pin:'', pinErr:false, q:'', filter:'all',
   patientId:null, sessionId:null, protoId:null, modal:null, swapOpen:false, histOpen:false, chartEx:null, printNote:false, showText:false,
@@ -2109,20 +2138,78 @@ function viewLogin(){
   } else {
     body='<p class="label">Quem está a usar o iPad?</p><div class="who">'+D.therapists.map(function(t){
       return '<button class="who-b" data-a="pickUser" data-id="'+t.id+'">'+avatar(t)+'<span><b>'+esc(t.name)+'</b><small>'+esc(t.role)+'</small></span></button>';
-    }).join('')+'</div>';
+    }).join('')+'</div>'+
+      (D.therapists.length===1?'<p class="small muted">Para juntar o resto da equipa: entre como '+esc(first(D.therapists[0].name))+', toque no seu nome no canto de cima e depois em <b>Equipa</b>.</p>':'');
   }
   return '<div class="login"><div class="login-card"><div class="brand-lg">'+logo()+'<div><h1 class="brand-word">OSTEOGAB</h1><p class="muted">Sessões · registo de treino e evolução dos pacientes</p></div></div>'+
-    body+'<p class="demo-note">Protótipo com dados fictícios. PIN de demonstração: <b>1234</b></p></div></div>';
+    body+'<p class="demo-note">Protótipo com dados fictícios. PIN de demonstração do Gabriel: <b>1234</b></p></div></div>';
+}
+
+/* ---------- Equipa ----------
+   Quem pode entrar neste iPad. Só o diretor clínico adiciona, edita e remove pessoas.
+   Cada pessoa entra com o seu PIN de 4 algarismos. */
+function teamHtml(m){
+  if(m.edit) return teamForm(m);
+  return '<div class="modal-top"><div><h3>Equipa</h3><p class="small muted">Quem pode entrar neste iPad. Cada pessoa entra com o seu PIN.</p></div><button class="btn" data-a="closeModal">Fechar</button></div>'+
+    '<div class="team-list">'+D.therapists.map(function(t){
+      return '<div class="team-row">'+avatar(t)+'<div class="team-main"><b>'+esc(t.name)+(t.id===D.me?' <span class="small muted">(você)</span>':'')+'</b><span class="small muted">'+esc(t.role)+
+        (t.admin && t.id!=='t1'?' · edita protocolos e exercícios':'')+'</span></div><button class="btn btn-ghost" data-a="teamEdit" data-id="'+t.id+'">Editar</button></div>';
+    }).join('')+'</div>'+
+    '<div class="modal-actions"><button class="btn btn-primary" data-a="teamEdit" data-id="">+ Adicionar pessoa</button></div>';
+}
+function teamForm(m){
+  var isNew=m.edit==='new', g=m.edit==='t1', n=isNew?0:countBy(m.edit);
+  return '<h3>'+(isNew?'Adicionar pessoa':'Editar '+esc(first(TH(m.edit).name)))+'</h3>'+
+    '<div class="field"><label class="label" for="tmName">Nome</label><input id="tmName" class="input" data-in="m.name" value="'+esc(m.name)+'" placeholder="Ex.: Ana Silva" autocomplete="off"></div>'+
+    '<div class="grid-2"><div class="field"><label class="label" for="tmRole">Função</label><input id="tmRole" class="input" data-in="m.role" value="'+esc(m.role)+'" placeholder="Fisioterapeuta" autocomplete="off"></div>'+
+    '<div class="field"><label class="label" for="tmPin">PIN (4 algarismos)</label><input id="tmPin" class="input" data-in="m.pin" value="'+esc(m.pin)+'" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"></div></div>'+
+    (g?'<p class="small muted">O diretor clínico cria e edita sempre os protocolos, os exercícios e os testes.</p>'
+      :'<label class="cbx" style="white-space:normal"><input type="checkbox" data-ch="m.admin"'+(m.admin?' checked':'')+'>Também pode criar e editar protocolos, exercícios e testes</label>')+
+    '<p id="tmErr" class="err" hidden></p>'+
+    (m.confirmDel ? '<p class="warn-box">'+esc(first(TH(m.edit).name))+' deixa de poder entrar.'+(n?' '+(n===1?'O registo que fez passa':'Os '+n+' registos que fez (sessões, notas e medições) passam')+' a aparecer em nome de '+esc(first(TH('t1').name))+'.':'')+'</p>'+
+        '<div class="modal-actions"><button class="btn" data-a="teamDelCancel">Não remover</button><button class="btn btn-danger" data-a="teamDel">Remover</button></div>'
+      : '<div class="modal-actions">'+(!isNew && !g && m.edit!==D.me?'<button class="btn btn-ghost" style="margin-right:auto" data-a="teamDelAsk">Remover</button>':'')+
+        '<button class="btn" data-a="teamBack">Cancelar</button><button class="btn btn-primary" data-a="teamSave">'+(isNew?'Adicionar':'Guardar')+'</button></div>');
+}
+function countBy(id){
+  return [D.sessions, D.tests, D.notes].reduce(function(n, list){ return n + list.filter(function(x){ return x.therapistId===id; }).length; }, 0);
+}
+function initials(name){
+  var w=name.trim().split(/\s+/); return (w[0].charAt(0)+(w.length>1?w[w.length-1].charAt(0):'')).toUpperCase();
+}
+
+/* ---------- Ideias para a app (provisório: só durante o piloto) ----------
+   Um botão sempre à mão para a equipa anotar o que mudaria, o que faltou ou o que correu mal.
+   Guarda também onde estava na app. Para retirar no fim do piloto, pôr PILOTO a false. */
+var PILOTO = true;
+var BULB = '<svg class="bulb" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg>';
+function ideaWhere(){
+  var v=ui.view;
+  if(v==='session' && D.live){ var e=D.live.entries[D.live.cur], x=e&&EX(e.ex); return 'Sessão'+(x?' · '+x.name:''); }
+  if(ui.modal && ui.modal.type==='pickEx') return 'Escolher exercício';
+  return {builder:'Preparar treino', patient:'Ficha do paciente', report:'Relatório', notes:'Notas', exercises:'Exercícios', library:'Protocolos', patients:'Pacientes'}[v] || '';
+}
+function ideasText(){
+  return 'Ideias para a app · Osteogab Sessões ('+D.ideas.length+')\n\n'+D.ideas.map(function(i){ var t=TH(i.by);
+    return '• '+fmtLong(i.at)+(t?' · '+first(t.name):'')+(i.where?' · '+i.where:'')+'\n  '+i.text.replace(/\n/g,'\n  '); }).join('\n\n');
+}
+function ideaList(){
+  return D.ideas.slice().reverse().map(function(i){ var t=TH(i.by);
+    return '<article class="note-card is-quick"><div class="note-top"><span class="note-time">'+fmtShort(i.at)+' · '+fmtTime(i.at)+'</span>'+
+      (i.where?'<span class="note-src">'+esc(i.where)+'</span>':'')+'<span class="note-by">'+(t?avatar(t,true)+esc(first(t.name)):'')+
+      '<button class="mini-b" data-a="ideaDel" data-id="'+i.id+'">Apagar</button></span></div><p class="note-text">'+esc(i.text)+'</p></article>';
+  }).join('');
 }
 
 function topbar(){
   var t=me(), live='';
   if(D.live && ui.view!=='session'){ var lp=PT(D.live.patientId);
-    live='<button class="live-pill no-print" data-a="resume"><span class="dot"></span>Sessão em curso · '+esc(lp.alias)+' · <span id="timer">'+fmtDur(Date.now()-D.live.start)+'</span></button>'; }
+    live='<button class="live-pill no-print" data-a="resume" aria-label="Voltar à sessão em curso de '+esc(lp.alias)+'"><span class="dot"></span><span class="lp-long">Sessão em curso · </span><span class="lp-short">Sessão · </span><span class="lp-pt">'+esc(lp.alias)+' · </span><span id="timer">'+fmtDur(Date.now()-D.live.start)+'</span></button>'; }
   var sec = ui.view==='exercises' ? 'exercises' : ui.view==='library' ? 'library' : ui.view==='notes' ? 'notes' : 'patients';
   function tab(v, txt){ return '<button class="tab'+(sec===v?' is-on':'')+'" data-a="nav" data-v="'+v+'">'+txt+'</button>'; }
   return '<header class="top"><div class="top-brand">'+logo()+'<b class="brand-word">OSTEOGAB</b><span class="brand-sub">Sessões</span></div>'+
     '<nav class="top-nav">'+tab('patients','Pacientes')+tab('exercises','Exercícios')+tab('library','Protocolos')+tab('notes','Notas')+'</nav>'+live+
+    (PILOTO?'<button class="btn top-idea" data-a="ideaNew" aria-label="Ideia para a app">'+BULB+'<span>Ideia</span></button>':'')+
     '<button class="btn btn-primary top-note" data-a="noteNew" aria-label="Nova nota">✎<span> Nota</span></button>'+
     '<button class="me" data-a="account" aria-label="Conta de '+esc(t.name)+'">'+avatar(t)+'<span class="me-name">'+esc(first(t.name))+'</span></button></header>';
 }
@@ -2702,12 +2789,26 @@ function viewModal(){
         : '<div class="modal-actions">'+(m.id?'<button class="btn btn-ghost" style="margin-right:auto" data-a="noteDelAsk">Apagar</button>':'')+'<button class="btn" data-a="closeModal">Cancelar</button><button class="btn btn-primary" data-a="noteSave">Guardar nota</button></div>');
   } else if(m.type==='exEdit'){
     h=exEditHtml(m);
+  } else if(m.type==='idea'){
+    var n=D.ideas.length;
+    h='<div class="modal-top"><div><h3>Ideia para a app</h3><p class="small muted">O que mudava, o que faltou ou o que correu mal. Fica guardado para a revisão no fim do piloto.</p></div></div>'+
+      '<div class="field"><textarea id="ideaText" class="note note-input" data-in="m.text" placeholder="Escreva, ou toque no microfone do teclado para ditar.">'+esc(m.text||'')+'</textarea>'+
+      (m.where?'<span class="idea-where">Onde estava: '+esc(m.where)+'</span>':'')+'</div><p id="iErr" class="err" hidden></p>'+
+      '<div class="modal-actions">'+(n?'<button class="btn btn-ghost" style="margin-right:auto" data-a="ideasOpen">Ver as '+n+' '+(n===1?'ideia':'ideias')+'</button>':'')+
+      '<button class="btn" data-a="closeModal">Cancelar</button><button class="btn btn-primary" data-a="ideaSave">Guardar ideia</button></div>';
+  } else if(m.type==='ideas'){
+    h='<div class="modal-top"><div><h3>Ideias para a app</h3><p class="small muted">'+D.ideas.length+' '+(D.ideas.length===1?'ideia guardada':'ideias guardadas')+' neste iPad, da mais recente para a mais antiga.</p></div><button class="btn" data-a="closeModal">Fechar</button></div>'+
+      (D.ideas.length?'<div class="notes-col">'+ideaList()+'</div>':'<p class="empty">Ainda sem ideias.</p>')+
+      (m.showText?'<textarea id="ideasText" class="note" rows="8" readonly>'+esc(ideasText())+'</textarea>':'')+
+      '<div class="modal-actions"><button class="btn" data-a="ideaNew">+ Nova ideia</button>'+(D.ideas.length?'<button class="btn btn-primary" data-a="ideasShare">Enviar todas</button>':'')+'</div>';
+  } else if(m.type==='team'){
+    h=teamHtml(m);
   } else if(m.type==='account'){
     var t=me();
     h='<div style="display:flex;gap:14px;align-items:center">'+avatar(t)+'<div><h3>'+esc(t.name)+'</h3><p class="muted small">'+esc(t.role)+'</p></div></div>'+
       '<p class="small">'+(t.admin?'Pode criar e editar protocolos, exercícios e testes.':'Usa os protocolos definidos pelo diretor clínico.')+'</p>'+
       (window.navigator.standalone===false?'<p class="notice small">No iPad, para abrir como app e em ecrã inteiro: no Safari, toque em Partilhar e depois em <b>Adicionar ao ecrã principal</b>.</p>':'')+
-      '<div class="modal-actions col"><button class="btn" data-a="logout">Trocar de utilizador</button>'+
+      '<div class="modal-actions col">'+(t.admin?'<button class="btn" data-a="teamOpen">Equipa · '+D.therapists.length+' '+(D.therapists.length===1?'pessoa':'pessoas')+'</button>':'')+'<button class="btn" data-a="logout">Trocar de utilizador</button>'+
       (m.confirmReset?'<p class="warn-box">Isto apaga todas as alterações feitas e repõe os dados de demonstração.</p><button class="btn btn-danger" data-a="reset">Sim, repor dados</button>'
         :'<button class="btn btn-ghost" data-a="resetAsk">Repor dados de demonstração</button>')+
       '<button class="btn btn-ghost" data-a="closeModal">Fechar</button></div>';
@@ -3077,7 +3178,7 @@ var A = {
   account:function(){ ui.modal={type:'account'}; render(); },
   logout:function(){ D.me=null; save(); releaseWake(); ui=freshUi(); render(); },
   resetAsk:function(){ ui.modal.confirmReset=true; render(); },
-  reset:function(){ var m=D.me; D=seed(); D.me=m; exIdx=null; seedPlans(); releaseWake(); ui=freshUi(); render(); toast('Dados de demonstração repostos'); },
+  reset:function(){ var m=D.me, ideas=D.ideas, team=D.therapists; D=seed(); D.me=m; D.ideas=ideas; D.therapists=team; exIdx=null; seedPlans(); releaseWake(); ui=freshUi(); render(); toast('Dados de demonstração repostos'); },
   noteNew:function(d){
     var pid = d.pid || (ui.view==='session' && D.live ? D.live.patientId : ui.view==='patient' ? ui.patientId : ui.view==='report' && SS(ui.sessionId) ? SS(ui.sessionId).patientId : null);
     ui.modal={type:'note', id:null, pid:pid, text:'', pq:''}; render(); focusSoon(pid?'noteText':'notePQ');
@@ -3144,6 +3245,53 @@ var A = {
   bSuggAll:function(){ var n=0; PT(ui.patientId).plan.items.forEach(function(it){ if(it.sg && it.sg.dir && !it.sgDone){ applyItemSugg(it); n++; } }); save(); render(); toast(n+' '+(n===1?'sugestão aplicada':'sugestões aplicadas')); },
   bMove:function(d){ var items=PT(ui.patientId).plan.items, i=+d.i, j=i+(+d.d); if(j<0||j>=items.length) return; var t=items[i]; items[i]=items[j]; items[j]=t; save(); render(); },
   bRemove:function(d){ PT(ui.patientId).plan.items.splice(+d.i,1); save(); render(); },
+  ideaNew:function(){ ui.modal={type:'idea', text:'', where:ideaWhere()}; render(); focusSoon('ideaText'); },
+  ideaSave:function(){
+    var m=ui.modal, text=(m.text||'').trim(), er=document.getElementById('iErr');
+    if(!text){ er.textContent='Escreva a ideia.'; er.hidden=false; return; }
+    D.ideas.push({id:'i'+uid(), by:D.me, at:new Date().toISOString(), where:m.where||'', text:text});
+    save(); ui.modal=null; render(); toast('Ideia guardada. Obrigado!');
+  },
+  ideasOpen:function(){ ui.modal={type:'ideas'}; render(); },
+  teamOpen:function(){ ui.modal={type:'team'}; render(); },
+  teamEdit:function(d){
+    var t=d.id?TH(d.id):null;
+    ui.modal = t ? {type:'team', edit:t.id, name:t.name, role:t.role, pin:t.pin, admin:!!t.admin}
+                 : {type:'team', edit:'new', name:'', role:'Fisioterapeuta', pin:'', admin:false};
+    render(); if(!t) focusSoon('tmName');
+  },
+  teamBack:function(){ ui.modal={type:'team'}; render(); },
+  teamSave:function(){
+    var m=ui.modal, name=(m.name||'').trim(), role=(m.role||'').trim()||'Fisioterapeuta', pin=(m.pin||'').trim(), er=document.getElementById('tmErr');
+    function no(msg){ er.textContent=msg; er.hidden=false; }
+    if(!name) return no('Escreva o nome.');
+    if(!/^[0-9]{4}$/.test(pin)) return no('O PIN tem de ter 4 algarismos.');
+    if(D.therapists.some(function(t){ return t.id!==m.edit && t.name.toLowerCase()===name.toLowerCase(); })) return no('Já existe alguém na equipa com este nome.');
+    if(m.edit==='new'){
+      D.therapists.push({id:'u'+uid(), name:name, ini:initials(name), role:role, admin:!!m.admin, av:(D.therapists.length%3)+1, pin:pin, added:true});
+      toast(first(name)+' já faz parte da equipa');
+    } else {
+      var t=TH(m.edit); t.name=name; t.ini=initials(name); t.role=role; t.pin=pin; if(t.id!=='t1') t.admin=!!m.admin;
+      toast('Alterações guardadas');
+    }
+    save(); ui.modal={type:'team'}; render();
+  },
+  teamDelAsk:function(){ ui.modal.confirmDel=true; render(); },
+  teamDelCancel:function(){ ui.modal.confirmDel=false; render(); },
+  teamDel:function(){
+    var id=ui.modal.edit, name=first(TH(id).name);
+    D.therapists=D.therapists.filter(function(t){ return t.id!==id; }); fixTeam(D);
+    save(); ui.modal={type:'team'}; render(); toast(name+' saiu da equipa');
+  },
+  ideaDel:function(d){ if(!window.confirm('Apagar esta ideia?')) return; D.ideas=D.ideas.filter(function(x){return x.id!==d.id;}); save(); render(); },
+  // Partilha pelo menu do iPad (WhatsApp, email…); sem partilha, copia; sem cópia, mostra o texto para selecionar
+  ideasShare:function(){
+    var txt=ideasText();
+    function fallback(){ ui.modal.showText=true; render(); var t=document.getElementById('ideasText'); t.focus(); t.select(); toast('Selecione o texto e copie'); }
+    function copy(){ try{ navigator.clipboard.writeText(txt).then(function(){toast('Ideias copiadas');}, fallback); }catch(e){ fallback(); } }
+    if(navigator.share){ navigator.share({title:'Ideias para a app', text:txt}).catch(function(e){ if(!e || e.name!=='AbortError') copy(); }); }
+    else copy();
+  },
   closeModal:function(){ ui.modal=null; render(); }
 };
 function focusSoon(id){ setTimeout(function(){ var i=document.getElementById(id); if(i) i.focus(); },30); }
@@ -3173,7 +3321,7 @@ document.addEventListener('input', function(ev){
 });
 document.addEventListener('change', function(ev){
   var t=ev.target, k=t.dataset&&t.dataset.ch; if(!k) return;
-  if(k.indexOf('m.')===0){ ui.modal[k.slice(2)]=t.value; }
+  if(k.indexOf('m.')===0){ ui.modal[k.slice(2)] = t.type==='checkbox' ? t.checked : t.value; }
   else if(k==='proto'){ PT(ui.patientId).proto=t.value; save(); render(); toast('Protocolo atualizado'); }
   else if(k==='chartEx'){ ui.chartEx=t.value; render(); }
   else if(k==='fType'){ fstate(t.dataset.s).ftype=t.value; render(); }
@@ -3186,12 +3334,12 @@ document.addEventListener('change', function(ev){
 setInterval(function(){ var el=document.getElementById('timer'); if(el && D.live) el.textContent=fmtDur(Date.now()-D.live.start); },1000);
 document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible' && D.live && D.me) requestWake(); });
 
-// Na primeira abertura desta versão, a Marta já tem o próximo treino preparado pela Inês (para a demonstração)
+// Na primeira abertura desta versão, a Marta já tem o próximo treino preparado (para a demonstração)
 function seedPlans(){
   var mp=PT('p7');
   if(mp && !mp.plan && !(D.live && D.live.patientId==='p7')){
     mp.plan={items:['pendulo','wallslide','reel','riel','elevlat','flexinc'].filter(EX).map(function(id){ var it=newItem(id, mp.id); applyItemSugg(it); return it; }),
-      note:'Rever a dor noturna antes de começar. Trocar a flexão na parede pela inclinada.', by:'t2', at:new Date(Date.now()-50*60000).toISOString()};
+      note:'Rever a dor noturna antes de começar. Trocar a flexão na parede pela inclinada.', by:'t1', at:new Date(Date.now()-50*60000).toISOString()};
   }
   D.plansV=1; save();
 }
