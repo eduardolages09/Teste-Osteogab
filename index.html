@@ -1507,9 +1507,15 @@ fixTeam(D);
 // A equipa: o Gabriel (t1) vem de THS e é sempre diretor clínico; as outras pessoas são adicionadas por ele no ecrã Equipa.
 // Perfis de exemplo de versões anteriores saem; os registos de quem já não existe passam para o Gabriel
 function fixTeam(d){
-  var old=d.therapists||[], g=old.find(function(t){ return t.id==='t1'; });
-  d.therapists = [Object.assign({}, THS[0], g?{name:g.name, ini:g.ini, role:g.role, pin:g.pin}:{}, {admin:true})]
-    .concat(old.filter(function(t){ return t.added; }));
+  var old=d.therapists||[], g=old.find(function(t){ return t.id==='t1'; }), extra=old.filter(function(t){ return t.added; });
+  // O Gabriel está sempre lá com o seu nome. Se o perfil dele foi renomeado (alguém usou Editar em vez de Adicionar),
+  // essa pessoa passa a ter um perfil próprio, com o mesmo PIN, e o Gabriel volta ao PIN de demonstração
+  if(g && g.name!==THS[0].name){
+    if(!extra.some(function(t){ return t.name.toLowerCase()===g.name.toLowerCase(); }))
+      extra.push({id:'u'+uid(), name:g.name, ini:initials(g.name), role:g.role && g.role!==THS[0].role ? g.role : 'Fisioterapeuta', admin:false, av:(extra.length+1)%3+1, pin:g.pin, added:true});
+    g=null; if(d.me==='t1') d.me=null;
+  }
+  d.therapists = [Object.assign({}, THS[0], g?{pin:g.pin}:{}, {admin:true})].concat(extra);
   var ok={}; d.therapists.forEach(function(t){ ok[t.id]=1; });
   function f(id){ return ok[id] ? id : 't1'; }
   [d.sessions, d.tests, d.notes].forEach(function(list){ (list||[]).forEach(function(x){ x.therapistId=f(x.therapistId); }); });
@@ -2153,12 +2159,17 @@ function teamHtml(m){
   return '<div class="modal-top"><div><h3>Equipa</h3><p class="small muted">Quem pode entrar neste iPad. Cada pessoa entra com o seu PIN.</p></div><button class="btn" data-a="closeModal">Fechar</button></div>'+
     '<div class="team-list">'+D.therapists.map(function(t){
       return '<div class="team-row">'+avatar(t)+'<div class="team-main"><b>'+esc(t.name)+(t.id===D.me?' <span class="small muted">(você)</span>':'')+'</b><span class="small muted">'+esc(t.role)+
-        (t.admin && t.id!=='t1'?' · edita protocolos e exercícios':'')+'</span></div><button class="btn btn-ghost" data-a="teamEdit" data-id="'+t.id+'">Editar</button></div>';
+        (t.admin && t.id!=='t1'?' · edita protocolos e exercícios':'')+'</span></div><button class="btn btn-ghost" data-a="teamEdit" data-id="'+t.id+'">'+(t.id==='t1'?'Mudar PIN':'Editar')+'</button></div>';
     }).join('')+'</div>'+
     '<div class="modal-actions"><button class="btn btn-primary" data-a="teamEdit" data-id="">+ Adicionar pessoa</button></div>';
 }
 function teamForm(m){
   var isNew=m.edit==='new', g=m.edit==='t1', n=isNew?0:countBy(m.edit);
+  // O perfil do Gabriel só muda de PIN; para outra pessoa usa-se "+ Adicionar pessoa"
+  if(g) return '<h3>PIN de '+esc(TH('t1').name)+'</h3>'+
+    '<p class="small muted">Este perfil é sempre do diretor clínico. Para juntar outra pessoa, volte atrás e toque em <b>+ Adicionar pessoa</b>.</p>'+
+    '<div class="field"><label class="label" for="tmPin">PIN (4 algarismos)</label><input id="tmPin" class="input" data-in="m.pin" value="'+esc(m.pin)+'" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"></div>'+
+    '<p id="tmErr" class="err" hidden></p><div class="modal-actions"><button class="btn" data-a="teamBack">Cancelar</button><button class="btn btn-primary" data-a="teamSave">Guardar</button></div>';
   return '<h3>'+(isNew?'Adicionar pessoa':'Editar '+esc(first(TH(m.edit).name)))+'</h3>'+
     '<div class="field"><label class="label" for="tmName">Nome</label><input id="tmName" class="input" data-in="m.name" value="'+esc(m.name)+'" placeholder="Ex.: Ana Silva" autocomplete="off"></div>'+
     '<div class="grid-2"><div class="field"><label class="label" for="tmRole">Função</label><input id="tmRole" class="input" data-in="m.role" value="'+esc(m.role)+'" placeholder="Fisioterapeuta" autocomplete="off"></div>'+
@@ -3262,7 +3273,7 @@ var A = {
   },
   teamBack:function(){ ui.modal={type:'team'}; render(); },
   teamSave:function(){
-    var m=ui.modal, name=(m.name||'').trim(), role=(m.role||'').trim()||'Fisioterapeuta', pin=(m.pin||'').trim(), er=document.getElementById('tmErr');
+    var m=ui.modal, name=m.edit==='t1' ? TH('t1').name : (m.name||'').trim(), role=(m.role||'').trim()||'Fisioterapeuta', pin=(m.pin||'').trim(), er=document.getElementById('tmErr');
     function no(msg){ er.textContent=msg; er.hidden=false; }
     if(!name) return no('Escreva o nome.');
     if(!/^[0-9]{4}$/.test(pin)) return no('O PIN tem de ter 4 algarismos.');
@@ -3271,7 +3282,7 @@ var A = {
       D.therapists.push({id:'u'+uid(), name:name, ini:initials(name), role:role, admin:!!m.admin, av:(D.therapists.length%3)+1, pin:pin, added:true});
       toast(first(name)+' já faz parte da equipa');
     } else {
-      var t=TH(m.edit); t.name=name; t.ini=initials(name); t.role=role; t.pin=pin; if(t.id!=='t1') t.admin=!!m.admin;
+      var t=TH(m.edit); t.pin=pin; if(t.id!=='t1'){ t.name=name; t.ini=initials(name); t.role=role; t.admin=!!m.admin; }
       toast('Alterações guardadas');
     }
     save(); ui.modal={type:'team'}; render();
