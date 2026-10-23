@@ -3343,7 +3343,11 @@ document.addEventListener('change', function(ev){
   else if(k==='exR'){ var r=t.value; [].forEach.call(document.querySelectorAll('[data-r]'),function(f){ f.hidden = f.dataset.r!==r; }); }
 });
 setInterval(function(){ var el=document.getElementById('timer'); if(el && D.live) el.textContent=fmtDur(Date.now()-D.live.start); },1000);
-document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible' && D.live && D.me) requestWake(); });
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState==='visible'){ if(D.live && D.me) requestWake(); }
+  else if(saveT){ clearTimeout(saveT); saveT=null; save(); }   // ao sair da app, grava o que ainda estava à espera
+});
+window.addEventListener('pagehide', function(){ if(saveT){ clearTimeout(saveT); saveT=null; save(); } });
 
 // Na primeira abertura desta versão, a Marta já tem o próximo treino preparado (para a demonstração)
 function seedPlans(){
