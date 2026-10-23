@@ -1455,7 +1455,7 @@ function seed(){
     });
     patients.push({id:P.id, code:P.code, alias:P.alias, proto:P.proto, side:P.side, goal:P.goal, stars:(P.stars||[]).slice(), since:(first||today).toISOString()});
   });
-  return {v:3, me:null, live:null, teamSeed:1, therapists:THS.concat(EQUIPA).map(function(t){return Object.assign({},t);}), exercises:exercises, protocols:protocols,
+  return {v:3, me:null, live:null, teamSeed:2, therapists:THS.concat(EQUIPA).map(function(t){return Object.assign({},t);}), exercises:exercises, protocols:protocols,
     patients:patients, sessions:sessions, tests:tests, notes:seedNotes(patients)};
 }
 // Notas rápidas de exemplo: [paciente, há quantos dias, terapeuta, hora, texto]
@@ -1522,13 +1522,14 @@ function fixTeam(d){
       extra.push({id:'u'+uid(), name:g.name, ini:initials(g.name), role:g.role && g.role!==THS[0].role ? g.role : 'Fisioterapeuta', admin:false, av:(extra.length+1)%3+1, pin:g.pin, added:true});
     g=null; if(d.me==='t1') d.me=null;
   }
-  if(!d.teamSeed){
-    // quem já tinha sido adicionado à mão com o mesmo nome fica com o seu perfil e PIN, só muda de lugar na lista
-    var first3=EQUIPA.map(function(s){
-      var i=extra.findIndex(function(t){ return t.name.toLowerCase()===s.name.toLowerCase(); });
-      return i<0 ? Object.assign({}, s) : extra.splice(i,1)[0];
+  if(d.teamSeed!==2){
+    // Uma vez em cada aparelho, a equipa fica só com a da clínica: os perfis de teste criados antes saem
+    // (os registos deles passam para o Gabriel). Quem já existia com o mesmo nome mantém o seu PIN.
+    extra=EQUIPA.map(function(s){
+      var t=extra.find(function(t){ return t.name.toLowerCase()===s.name.toLowerCase(); });
+      return t ? Object.assign({}, s, {id:t.id, pin:t.pin}) : Object.assign({}, s);
     });
-    extra=first3.concat(extra); d.teamSeed=1;
+    d.teamSeed=2;
   }
   d.therapists = [Object.assign({}, THS[0], g?{pin:g.pin}:{}, {admin:true})].concat(extra);
   var ok={}; d.therapists.forEach(function(t){ ok[t.id]=1; });
@@ -3204,7 +3205,7 @@ var A = {
   account:function(){ ui.modal={type:'account'}; render(); },
   logout:function(){ D.me=null; save(); releaseWake(); ui=freshUi(); render(); },
   resetAsk:function(){ ui.modal.confirmReset=true; render(); },
-  reset:function(){ var m=D.me, ideas=D.ideas, team=D.therapists; D=seed(); D.me=m; D.ideas=ideas; D.therapists=team; D.teamSeed=1; exIdx=null; seedPlans(); releaseWake(); ui=freshUi(); render(); toast('Dados de demonstração repostos'); },
+  reset:function(){ var m=D.me, ideas=D.ideas, team=D.therapists; D=seed(); D.me=m; D.ideas=ideas; D.therapists=team; D.teamSeed=2; exIdx=null; seedPlans(); releaseWake(); ui=freshUi(); render(); toast('Dados de demonstração repostos'); },
   noteNew:function(d){
     var pid = d.pid || (ui.view==='session' && D.live ? D.live.patientId : ui.view==='patient' ? ui.patientId : ui.view==='report' && SS(ui.sessionId) ? SS(ui.sessionId).patientId : null);
     ui.modal={type:'note', id:null, pid:pid, text:'', pq:''}; render(); focusSoon(pid?'noteText':'notePQ');
