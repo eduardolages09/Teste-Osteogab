@@ -4,7 +4,7 @@ Protótipo de uma app para registar sessões de fisioterapia no ginásio, pensad
 
 - Um único ficheiro: `index.html` (HTML, CSS e JavaScript, sem dependências nem build).
 - Os dados são fictícios e ficam guardados só no browser de cada aparelho (localStorage).
-- Para entrar: escolher Gabriel Nunes (diretor clínico) e usar o PIN `1234`. O resto da equipa é adicionado por ele: nome no canto de cima → **Equipa** (nome, função, PIN de 4 algarismos e se pode editar protocolos). A equipa fica guardada no iPad e mantém-se ao repor os dados de demonstração.
+- Equipa: Gabriel Nunes (diretor clínico) e as fisioterapeutas Beatriz Santos, Catarina Araújo e Gabriela Neves, todos com o PIN `1234` para começar. O Gabriel muda os PINs e junta mais pessoas no nome no canto de cima → **Equipa** (nome, função, PIN de 4 algarismos e se pode editar protocolos). A equipa fica guardada no iPad e mantém-se ao repor os dados de demonstração.
 
 Para abrir localmente, basta abrir `index.html` no browser.
 

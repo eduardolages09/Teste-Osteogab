@@ -1290,6 +1290,13 @@ var RES_NAME = {'':'Sem resistência', kg:'Carga em kg', band:'Elástico (cor)'}
 var THS = [
   {id:'t1', name:'Gabriel Nunes', ini:'GN', role:'Diretor clínico', admin:true, av:1, pin:'1234'}
 ];
+// Fisioterapeutas da clínica: entram uma vez em cada aparelho, por esta ordem, logo a seguir ao Gabriel.
+// Depois são perfis como os outros: o Gabriel pode editá-los ou removê-los no ecrã Equipa
+var EQUIPA = [
+  {id:'f2', name:'Beatriz Santos', ini:'BS', role:'Fisioterapeuta', admin:false, av:2, pin:'1234', added:true},
+  {id:'f3', name:'Catarina Araújo', ini:'CA', role:'Fisioterapeuta', admin:false, av:3, pin:'1234', added:true},
+  {id:'f4', name:'Gabriela Neves', ini:'GN', role:'Fisioterapeuta', admin:false, av:2, pin:'1234', added:true}
+];
 
 var T_FLEX = {id:'flexj', name:'Flexão do joelho', unit:'°', uni:true};
 var T_RE = {id:'re', name:'Rotação externa do ombro', unit:'°', uni:true};
@@ -1448,7 +1455,7 @@ function seed(){
     });
     patients.push({id:P.id, code:P.code, alias:P.alias, proto:P.proto, side:P.side, goal:P.goal, stars:(P.stars||[]).slice(), since:(first||today).toISOString()});
   });
-  return {v:3, me:null, live:null, therapists:THS.map(function(t){return Object.assign({},t);}), exercises:exercises, protocols:protocols,
+  return {v:3, me:null, live:null, teamSeed:1, therapists:THS.concat(EQUIPA).map(function(t){return Object.assign({},t);}), exercises:exercises, protocols:protocols,
     patients:patients, sessions:sessions, tests:tests, notes:seedNotes(patients)};
 }
 // Notas rápidas de exemplo: [paciente, há quantos dias, terapeuta, hora, texto]
@@ -1504,7 +1511,7 @@ D.patients.forEach(function(p){ p.stars = p.stars||[]; });
 if(!D.notes) D.notes = seedNotes(D.patients);
 if(!D.ideas) D.ideas = [];
 fixTeam(D);
-// A equipa: o Gabriel (t1) vem de THS e é sempre diretor clínico; as outras pessoas são adicionadas por ele no ecrã Equipa.
+// A equipa: o Gabriel (t1) vem de THS e é sempre diretor clínico; as fisioterapeutas de EQUIPA entram uma vez; outras pessoas são adicionadas por ele no ecrã Equipa.
 // Perfis de exemplo de versões anteriores saem; os registos de quem já não existe passam para o Gabriel
 function fixTeam(d){
   var old=d.therapists||[], g=old.find(function(t){ return t.id==='t1'; }), extra=old.filter(function(t){ return t.added; });
@@ -1514,6 +1521,14 @@ function fixTeam(d){
     if(!extra.some(function(t){ return t.name.toLowerCase()===g.name.toLowerCase(); }))
       extra.push({id:'u'+uid(), name:g.name, ini:initials(g.name), role:g.role && g.role!==THS[0].role ? g.role : 'Fisioterapeuta', admin:false, av:(extra.length+1)%3+1, pin:g.pin, added:true});
     g=null; if(d.me==='t1') d.me=null;
+  }
+  if(!d.teamSeed){
+    // quem já tinha sido adicionado à mão com o mesmo nome fica com o seu perfil e PIN, só muda de lugar na lista
+    var first3=EQUIPA.map(function(s){
+      var i=extra.findIndex(function(t){ return t.name.toLowerCase()===s.name.toLowerCase(); });
+      return i<0 ? Object.assign({}, s) : extra.splice(i,1)[0];
+    });
+    extra=first3.concat(extra); d.teamSeed=1;
   }
   d.therapists = [Object.assign({}, THS[0], g?{pin:g.pin}:{}, {admin:true})].concat(extra);
   var ok={}; d.therapists.forEach(function(t){ ok[t.id]=1; });
@@ -2148,7 +2163,7 @@ function viewLogin(){
       (D.therapists.length===1?'<p class="small muted">Para juntar o resto da equipa: entre como '+esc(first(D.therapists[0].name))+', toque no seu nome no canto de cima e depois em <b>Equipa</b>.</p>':'');
   }
   return '<div class="login"><div class="login-card"><div class="brand-lg">'+logo()+'<div><h1 class="brand-word">OSTEOGAB</h1><p class="muted">Sessões · registo de treino e evolução dos pacientes</p></div></div>'+
-    body+'<p class="demo-note">Protótipo com dados fictícios. PIN de demonstração do Gabriel: <b>1234</b></p></div></div>';
+    body+'<p class="demo-note">Protótipo com dados fictícios. PIN de demonstração: <b>1234</b></p></div></div>';
 }
 
 /* ---------- Equipa ----------
@@ -3189,7 +3204,7 @@ var A = {
   account:function(){ ui.modal={type:'account'}; render(); },
   logout:function(){ D.me=null; save(); releaseWake(); ui=freshUi(); render(); },
   resetAsk:function(){ ui.modal.confirmReset=true; render(); },
-  reset:function(){ var m=D.me, ideas=D.ideas, team=D.therapists; D=seed(); D.me=m; D.ideas=ideas; D.therapists=team; exIdx=null; seedPlans(); releaseWake(); ui=freshUi(); render(); toast('Dados de demonstração repostos'); },
+  reset:function(){ var m=D.me, ideas=D.ideas, team=D.therapists; D=seed(); D.me=m; D.ideas=ideas; D.therapists=team; D.teamSeed=1; exIdx=null; seedPlans(); releaseWake(); ui=freshUi(); render(); toast('Dados de demonstração repostos'); },
   noteNew:function(d){
     var pid = d.pid || (ui.view==='session' && D.live ? D.live.patientId : ui.view==='patient' ? ui.patientId : ui.view==='report' && SS(ui.sessionId) ? SS(ui.sessionId).patientId : null);
     ui.modal={type:'note', id:null, pid:pid, text:'', pq:''}; render(); focusSoon(pid?'noteText':'notePQ');
